@@ -15,7 +15,9 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:text="@string/instructions" />
+        android:text="@string/instructions"
+        android:textAppearance="@style/TextAppearance.AppCompat"
+        android:textSize="18sp" />
 
     <Button
         android:id="@+id/tell_joke_button"
@@ -25,7 +27,9 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/activity_vertical_margin"
         android:onClick="tellJoke"
-        android:text="@string/button_text" />
+        android:text="@string/button_text"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp" />
 
     <ProgressBar
         android:id="@+id/progressBar"
