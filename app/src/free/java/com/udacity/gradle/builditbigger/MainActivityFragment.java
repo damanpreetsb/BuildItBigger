@@ -1,12 +1,16 @@
 package com.udacity.gradle.builditbigger;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ProgressBar;
 
+import com.example.jokelib_android.JokeDisplayActivity;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -17,9 +21,12 @@ import com.udacity.gradle.builditbigger.R;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MainActivityFragment extends Fragment {
+public class MainActivityFragment extends Fragment implements OnJokeReceivedListener {
 
-    InterstitialAd mInterstitialAd;
+    private InterstitialAd mInterstitialAd;
+    private ProgressBar progressBar;
+    private String mJoke;
+
 
     public MainActivityFragment() {
     }
@@ -38,11 +45,19 @@ public class MainActivityFragment extends Fragment {
         mInterstitialAd.setAdListener(new AdListener() {
             @Override
             public void onAdClosed() {
-                requestNewInterstitial();
+                startJokeActivity();
             }
         });
 
         requestNewInterstitial();
+        progressBar = (ProgressBar) root.findViewById(R.id.progressBar);
+        Button button = (Button) root.findViewById(R.id.tell_joke_button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                fetchJoke();
+            }
+        });
 
         return root;
     }
@@ -56,10 +71,25 @@ public class MainActivityFragment extends Fragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        if(mInterstitialAd.isLoaded()){
+    public void onReceived(String joke) {
+        progressBar.setVisibility(View.INVISIBLE);
+        mJoke = joke;
+        if (mInterstitialAd != null && mInterstitialAd.isLoaded()) {
             mInterstitialAd.show();
+            startJokeActivity();
+        } else {
+            startJokeActivity();
         }
+    }
+
+    private void startJokeActivity() {
+        Intent intent = new Intent(getActivity(), JokeDisplayActivity.class);
+        intent.putExtra(JokeDisplayActivity.INTENT_KEY, mJoke);
+        startActivity(intent);
+    }
+
+    public void fetchJoke(){
+        progressBar.setVisibility(View.VISIBLE);
+        new EndpointsAsyncTask().execute(this);
     }
 }
