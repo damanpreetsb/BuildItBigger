@@ -7,6 +7,15 @@ of four modules. A Java library that provides jokes, a Google Cloud Endpoints
 activity for displaying jokes, and an Android app that fetches jokes from the
 GCE module and passes them to the Android Library for display.
 
+## Images
+### App Flow:
+<img src="https://github.com/DamanSingh4321/BuildItBigger/blob/master/screenshots/flow.png"/>
+
+### Screenshots:
+<img src="https://github.com/DamanSingh4321/BuildItBigger/blob/master/screenshots/device-2016-10-28-135236.png" width="250"/>
+<img src="https://github.com/DamanSingh4321/BuildItBigger/blob/master/screenshots/device-2016-10-28-135404.png" width="250"/>
+<img src="https://github.com/DamanSingh4321/BuildItBigger/blob/master/screenshots/device-2016-10-28-135430.png" width="250"/>
+
 ## Why this Project
 
 As Android projects grow in complexity, it becomes necessary to customize the
