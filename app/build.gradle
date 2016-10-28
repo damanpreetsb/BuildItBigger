@@ -18,6 +18,15 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    productFlavors {
+        free {
+            applicationIdSuffix '.free'
+        }
+        paid {
+            applicationIdSuffix '.paid'
+        }
+    }
 }
 
 dependencies {
@@ -25,9 +34,9 @@ dependencies {
     // Added for AdMob
     compile project(':jokelib')
     compile project(':jokelib-android')
+    compile project(path: ':backend', configuration: 'android-endpoints')
     compile 'com.android.support:appcompat-v7:25.0.0'
     compile 'com.google.android.gms:play-services-ads:9.8.0'
     compile 'com.google.code.findbugs:jsr305:2.0.1'
-    compile project(path: ':backend', configuration: 'android-endpoints')
-//    compile project(':backend')
+    compile 'com.android.support:support-v4:25.0.0'
 }

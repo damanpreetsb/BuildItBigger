@@ -4,12 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
-import android.util.Pair;
+import android.support.v4.util.Pair;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.example.JokeTeller;
 import com.example.daman.myapplication.backend.myApi.MyApi;
@@ -22,12 +24,27 @@ import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 import java.io.IOException;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity {
+
+    ProgressBar progressBar;
+    TextView tv;
+    Button btn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        tv = (TextView) findViewById(R.id.instructions_text_view);
+        btn = (Button) findViewById(R.id.tell_joke_button);
+        progressBar.setVisibility(View.GONE);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        tv.setVisibility(View.VISIBLE);
+        btn.setVisibility(View.VISIBLE);
     }
 
 
@@ -54,25 +71,24 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void tellJoke(View view) {
-
         JokeTeller jokeTeller = new JokeTeller();
+        progressBar.setVisibility(View.VISIBLE);
+        tv.setVisibility(View.GONE);
+        btn.setVisibility(View.GONE);
+        findViewById(R.id.tell_joke_button).setVisibility(View.GONE);
         String joke = jokeTeller.getJoke();
         new EndpointsAsyncTask().execute(new Pair<Context, String>(this, joke));
 
     }
 
-    class EndpointsAsyncTask extends AsyncTask<Pair<Context, String>, Void, String> {
+    public class EndpointsAsyncTask extends AsyncTask<Pair<Context, String>, Void, String> {
         private MyApi myApiService = null;
-        private Context context;
 
         @Override
         protected String doInBackground(Pair<Context, String>... params) {
             if(myApiService == null) {  // Only do this once
                 MyApi.Builder builder = new MyApi.Builder(AndroidHttp.newCompatibleTransport(),
                         new AndroidJsonFactory(), null)
-                        // options for running against local devappserver
-                        // - 10.0.2.2 is localhost's IP address in Android emulator
-                        // - turn off compression when running against local devappserver
                         .setRootUrl("https://joketeller-147717.appspot.com/_ah/api/")
                         .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
                             @Override
@@ -80,16 +96,14 @@ public class MainActivity extends ActionBarActivity {
                                 abstractGoogleClientRequest.setDisableGZipContent(true);
                             }
                         });
-                // end options for devappserver
 
                 myApiService = builder.build();
             }
 
-            context = params[0].first;
-            String name = params[0].second;
+            String joke = params[0].second;
 
             try {
-                return myApiService.sayHi(name).execute().getData();
+                return myApiService.sayHi(joke).execute().getData();
             } catch (IOException e) {
                 return e.getMessage();
             }
@@ -97,12 +111,11 @@ public class MainActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(String result) {
-            Intent intent = new Intent(context, JokeDisplayActivity.class);
+            Intent intent = new Intent(MainActivity.this, JokeDisplayActivity.class).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
             intent.putExtra(JokeDisplayActivity.INTENT_KEY, result);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            progressBar.setVisibility(View.GONE);
             startActivity(intent);
         }
     }
-
 
 }
